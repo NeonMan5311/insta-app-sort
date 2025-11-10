@@ -76,10 +76,15 @@ router.get("/:result_id", async (req, res) => {
         };
 
         // --- FIX 5: Check 'job.status', not 'JSON.status' ---
-        if (job.status === "complete") { // <-- FIX: Was 'JSON.status'
-            // --- FIX 6: Use 'result_json' (lowercase j) ---
-            response.results = JSON.parse(job.result_json); // <-- FIX: Was 'job.result_json'
-        } else if (job.status === "failed") { // <-- FIX: Was 'JSON.status'
+        if (job.status === "complete") {
+            // Check if results_json is not null before parsing
+            if (job.results_json) {
+                response.results = JSON.parse(job.results_json);
+            } else {
+                // This will prevent the crash you're seeing
+                response.results = []; 
+            }
+        } else if (job.status === "failed") {
             response.error = job.error_message;
         }
         
@@ -92,3 +97,4 @@ router.get("/:result_id", async (req, res) => {
 });
 
 module.exports = router;
+
