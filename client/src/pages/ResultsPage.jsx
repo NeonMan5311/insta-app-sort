@@ -20,7 +20,6 @@ import {
 } from '@/components/ui/select';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Loader2, AlertTriangle, Eye, Calendar } from 'lucide-react';
 
 // --- (Your useJobPoller hook is UNCHANGED) ---
 // ... (paste the useJobPoller hook code here) ...
@@ -158,4 +157,5 @@ export default function ResultsPage() {
     </div>
   );
 }
+
 
