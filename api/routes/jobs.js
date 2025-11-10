@@ -1,7 +1,6 @@
 const express = require("express");
 const router=express.Router();
 const Job=require("../models/Job");
-const {sendEmail}=require("../services/emailService");
 
 router.post("/",async(req,res)=>{
     if (req.app.get("maintenance_mode") === true) {
@@ -73,5 +72,6 @@ router.get("/:result_id",async(req,res)=>{
         return res.status(500).json({error:"Internal server error"});
     }
 })
+
 
 module.exports=router;
