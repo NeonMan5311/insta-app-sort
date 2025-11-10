@@ -19,7 +19,7 @@ const JobSchema = new mongoose.Schema(
 			default: "pending",
 			index: true,
 		},
-		result_json: {
+		results_json: {
 			type: String,
 			default: null,
 		},
@@ -39,3 +39,4 @@ const JobSchema = new mongoose.Schema(
 );
 
 module.exports = mongoose.model("Job", JobSchema);
+
