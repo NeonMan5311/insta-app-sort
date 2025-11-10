@@ -1,7 +1,7 @@
 // api/routes/jobs.js
 const express = require("express");
 const router = express.Router();
-const Job = require("../models/Job"); // This was correct
+const Job = require("../models/Job"); // Import the 'Job' model
 
 router.post("/", async (req, res) => {
     // Maintenance check was correct
@@ -19,22 +19,22 @@ router.post("/", async (req, res) => {
     try {
         const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
         
-        // --- FIX 1: status must be 'complete' (lowercase) ---
-        // --- FIX 2: Check 'updatedAt', not 'created_at' for caching ---
+        // --- FIX: Use 'complete' (lowercase) ---
+        // --- FIX: Check 'updatedAt' for caching ---
         const cachedJob = await Job.findOne({
             profile_url: profile_url,
-            status: "complete", // <-- FIX: Was 'completed'
-            updatedAt: { $gte: twentyFourHoursAgo } // <-- FIX: Was 'created_at'
+            status: "complete", 
+            updatedAt: { $gte: twentyFourHoursAgo }
         });
         
         if (cachedJob) {
             console.log("Returning cached job result for profile_url:", profile_url);
             
-            // --- FIX 3: status must be a string 'complete' ---
+            // --- FIX: Send 'complete' as a string ---
             return res.status(200).json({
                 message: "Job completed (from cache)",
                 result_id: cachedJob.result_id,
-                status: "complete", // <-- FIX: Was 'complete' (variable)
+                status: "complete", 
             });
         }
 
@@ -61,8 +61,8 @@ router.post("/", async (req, res) => {
 
 router.get("/:result_id", async (req, res) => {
     try {
-        // --- FIX 4: Use the 'Job' model, not the 'JSON' object ---
-        const job = await Job.findOne({ result_id: req.params.result_id }); // <-- FIX: Was 'JSON'
+        // --- FIX: Use the 'Job' model, not the 'JSON' object ---
+        const job = await Job.findOne({ result_id: req.params.result_id }); 
         
         if (!job) {
             return res.status(404).json({ error: "Job not found" });
@@ -75,13 +75,13 @@ router.get("/:result_id", async (req, res) => {
             error: null
         };
 
-        // --- FIX 5: Check 'job.status', not 'JSON.status' ---
+        // --- FIX: Check 'job.status', not 'JSON.status' ---
         if (job.status === "complete") {
             // Check if results_json is not null before parsing
-            if (job.results_json) {
+            if (job.results_json) { // <-- FIX: 'results_json' (with 's')
                 response.results = JSON.parse(job.results_json);
             } else {
-                // This will prevent the crash you're seeing
+                // This will prevent the crash you saw before
                 response.results = []; 
             }
         } else if (job.status === "failed") {
@@ -97,4 +97,3 @@ router.get("/:result_id", async (req, res) => {
 });
 
 module.exports = router;
-
