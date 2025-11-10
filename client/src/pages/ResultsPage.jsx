@@ -2,7 +2,7 @@
 import React, { useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useJobPoller } from '../hooks/useJobPoller'; // (This hook is unchanged)
-
+import { Loader2, AlertTriangle, Eye, Calendar, Heart } from 'lucide-react'; // <-- ADD HEART
 // --- shadcn/ui & icon imports ---
 import {
   Card,
@@ -112,40 +112,50 @@ export default function ResultsPage() {
       {/* --- UPDATED: Results Grid --- */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {sortedResults.map((post) => (
-          <Card key={post.post_url} className="flex flex-col justify-between overflow-hidden">
-            
-            {/* Clickable Thumbnail Image */}
-            <a href={post.post_url} target="_blank" rel="noopener noreferrer">
-              <img 
-                src={post.thumbnail_url} 
-                alt={post.media_type === 'video' ? 'Video Post' : 'Image Post'} 
-                className="aspect-square object-cover w-full hover:scale-105 transition-transform" 
-              />
-            </a>
-            
-            <CardHeader>
-              <CardTitle className="text-lg">
-                {post.media_type === 'video' ? 'Reel/Video Post' : 'Image Post'}
-              </CardTitle>
-              <CardDescription className="flex items-center gap-1.5 pt-1">
-                 <Calendar className="h-3.5 w-3.5" /> 
-                 {new Date(post.post_date).toLocaleDateString()}
-              </CardDescription>
-            </CardHeader>
-            
-            {/* Removed CardContent (caption) */}
-
-            <CardFooter className="flex justify-start text-sm font-medium pt-4 border-t">
-              <span className="flex items-center gap-1" title="Views">
-                <Eye className="h-4 w-4" /> 
-                {/* Show view_count for videos, N/A for images */}
-                {post.media_type === 'video' ? formatNum(post.view_count) : 'N/A'}
-              </span>
-              {/* Removed Likes and Comments */}
-            </CardFooter>
-          </Card>
+         <Card key={post.post_url} className="flex flex-col justify-between overflow-hidden">
+                    
+                    {/* Clickable Thumbnail Image (This is correct) */}
+                    <a href={post.post_url} target="_blank" rel="noopener noreferrer">
+                    <img 
+                        src={post.thumbnail_url} 
+                        alt={post.media_type === 'video' ? 'Video Post' : 'Image Post'} 
+                        className="aspect-square object-cover w-full hover:scale-105 transition-transform" 
+                    />
+                    </a>
+                    
+                    {/* CardHeader (This is correct) */}
+                    <CardHeader>
+                    <CardTitle className="text-lg">
+                        {post.media_type === 'video' ? 'Reel/Video Post' : 'Image Post'}
+                    </CardTitle>
+                    <CardDescription className="flex items-center gap-1.5 pt-1">
+                        <Calendar className="h-3.5 w-3.5" /> 
+                        {new Date(post.post_date).toLocaleDateString()}
+                    </CardDescription>
+                    </CardHeader>
+                    
+                    {/* --- THIS IS THE FIX --- */}
+                    <CardFooter className="flex justify-start text-sm font-medium pt-4 border-t">
+                    <span className="flex items-center gap-1" title={post.media_type === 'video' ? 'Views' : 'Likes'}>
+                        
+                        {/* Show Eye icon for video, Heart icon for image */}
+                        {post.media_type === 'video' ? (
+                            <Eye className="h-4 w-4" />
+                        ) : (
+                            <Heart className="h-4 w-4" />
+                        )}
+                        
+                        {/* This field now shows *either* view_count or like_count, 
+                        thanks to your worker.py logic.
+                        */}
+                        {formatNum(post.view_count)}
+                    </span>
+                    </CardFooter>
+                    {/* --- END OF FIX --- */}
+                </Card>
         ))}
       </div>
     </div>
   );
 }
+
