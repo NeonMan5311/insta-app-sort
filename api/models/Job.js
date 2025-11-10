@@ -28,7 +28,7 @@ const JobSchema = new mongoose.Schema(
 			default: null,
 		},
 		result_id: {
-			typr: String,
+			type: String,
 			unique: true,
 			default: () => new mongoose.Types.ObjectId().toHexString(),
 		},
@@ -37,4 +37,5 @@ const JobSchema = new mongoose.Schema(
 		timestamps: true,
 	}
 );
+
 module.exports = mongoose.model("Job", JobSchema);
